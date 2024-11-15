@@ -29,11 +29,14 @@ export class User {
   @Column({ type: 'varchar', nullable: false })
   phone_number: string;
 
+  @Column({ type: 'varchar', nullable: false })
+  password: string;
+
   @ManyToOne(() => File, { nullable: true })
   @JoinColumn({ name: 'profile_picture' })
   profile_picture: File;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
   @UpdateDateColumn({ type: 'timestamp' })
