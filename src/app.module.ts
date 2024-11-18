@@ -5,6 +5,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import databaseConfig from './config/database.config';
 import { UsersModule } from './modules/users/users.module';
+import { PermissionsModule } from './modules/permissions/permissions.module';
+import { RolesModule } from './modules/roles/roles.module';
+import { RolePermissionModule } from './modules/role_permission/role_permission.module';
 
 @Module({
   imports: [
@@ -27,6 +30,9 @@ import { UsersModule } from './modules/users/users.module';
       inject: [ConfigService],
     }),
     UsersModule,
+    PermissionsModule,
+    RolesModule,
+    RolePermissionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

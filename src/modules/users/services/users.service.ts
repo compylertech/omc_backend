@@ -35,7 +35,7 @@ export class UsersService {
    * @param userId The ID of the user.
    * @returns The user entity.
    */
-  async findOne(userId: number): Promise<User> {
+  async findOne(userId: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) {
       throw new NotFoundException(`User with ID ${userId} not found`);
@@ -49,7 +49,7 @@ export class UsersService {
    * @param updateUserDto Data Transfer Object for updating a user.
    * @returns The updated user entity.
    */
-  async update(userId: number, updateUserDto: UpdateUserDto): Promise<User> {
+  async update(userId: string, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(userId); // Ensures the user exists
     Object.assign(user, updateUserDto); // Update fields
     return this.userRepository.save(user);
@@ -60,7 +60,7 @@ export class UsersService {
    * @param userId The ID of the user.
    * @returns An object indicating success.
    */
-  async remove(userId: number): Promise<{ deleted: boolean }> {
+  async remove(userId: string): Promise<{ deleted: boolean }> {
     const result = await this.userRepository.delete(userId);
     if (result.affected === 0) {
       throw new NotFoundException(`User with ID ${userId} not found`);
