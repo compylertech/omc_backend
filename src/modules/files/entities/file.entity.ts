@@ -8,21 +8,35 @@ import {
 
 @Entity('files')
 export class File {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
+
+  @Column()
+  fileName: string;
+
+  @Column()
+  size: string;
 
   @Column({ type: 'varchar', nullable: false })
-  filename: string;
-
-  @Column({ type: 'integer', nullable: false })
-  size: number;
-
-  @Column({ type: 'varchar', nullable: false })
-  file_url: string;
+  fileUrl: string;
 
   @CreateDateColumn({ type: 'timestamp' })
-  created_at: Date;
+  createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamp' })
-  updated_at: Date;
+  updatedAt: Date;
+
+  constructor(
+    fileName: string,
+    size: string,
+    fileUrl: string,
+    updatedAt: Date,
+    createdAt: Date = new Date(),
+  ) {
+    this.fileName = fileName;
+    this.size = size;
+    this.fileUrl = fileUrl;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+  }
 }
