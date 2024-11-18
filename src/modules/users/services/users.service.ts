@@ -36,7 +36,7 @@ export class UsersService {
    * @returns The user entity.
    */
   async findOne(userId: number): Promise<User> {
-    const user = await this.userRepository.findOneBy({ userId });
+    const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) {
       throw new NotFoundException(`User with ID ${userId} not found`);
     }
@@ -66,5 +66,18 @@ export class UsersService {
       throw new NotFoundException(`User with ID ${userId} not found`);
     }
     return { deleted: true };
+  }
+
+  /**
+   * Find a user by email.
+   * @param email The email address of the user.
+   * @returns The user entity.
+   */
+  async findByEmail(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new NotFoundException(`User with email ${email} not found`);
+    }
+    return user;
   }
 }
