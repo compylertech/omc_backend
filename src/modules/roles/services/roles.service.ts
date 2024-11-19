@@ -25,14 +25,11 @@ export class RolesService {
   async create(createRoleDto: CreateRoleDto): Promise<Role> {
     const { name, description, privileges: privilegeIds } = createRoleDto;
 
-    // Create the role
     const role = this.rolesRepository.create({ name, description });
     await this.rolesRepository.save(role);
 
-    // Find the privileges by their IDs
     const privileges = await this.privilegesRepository.findByIds(privilegeIds);
 
-    // Create role-privilege records
     for (const privilege of privileges) {
       const rolePrivilege = this.rolePrivilegesRepository.create({
         role,
@@ -57,19 +54,72 @@ export class RolesService {
     return role;
   }
 
-  findAll() {
-    return `This action returns all roles`;
+  /**
+   * Get all roles from the repository.
+   * @returns {Promise<Role[]>} A promise that resolves to an array of Role objects.
+   */
+  async findAll(): Promise<Role[]> {
+    return this.rolesRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} role`;
+  /**
+   * Get a role by its ID.
+   * @param {string} id - The ID of the role to retrieve.
+   * @returns {Promise<Role>} A promise that resolves to the role with the specified ID.
+   * @throws {NotFoundException} If no role with the specified ID is found.
+   */
+  async findOne(id: string): Promise<Role> {
+    const role = await this.rolesRepository.findOne({ where: { id } });
+    if (!role) {
+      throw new NotFoundException(`Role with ID ${id} not found`);
+    }
+    return role;
   }
 
-  // update(id: number, updateRoleDto: UpdateRoleDto) {
-  //   return `This action updates a #${id} role`;
+  // async update(id: string, updateRoleDto: UpdateRoleDto): Promise<Role> {
+  //   const { name, description, privileges } = updateRoleDto;
+
+  //   const role = await this.rolesRepository.findOne({ where: { id } });
+  //   if (!role) {
+  //     throw new NotFoundException(`Role with ID ${id} not found`);
+  //   }
+
+  //   if (name) {
+  //     role.name = name;
+  //   }
+  //   if (description) {
+  //     role.description = description;
+  //   }
+  //   await this.rolesRepository.save(role);
+
+  //   // Update role-privilege records
+  //   await this.rolePrivilegesRepository.delete({ role });
+
+  //   const privilegesDetails = privileges
+  //     ? await this.privilegesRepository.findByIds(privileges)
+  //     : [];
+  //   for (const privilege of privilegesDetails) {
+  //     const rolePermission = this.rolePrivilegesRepository.create({
+  //       role,
+  //       privilege,
+  //     });
+  //     await this.rolePrivilegesRepository.save(rolePermission);
+  //   }
+
+  //   return role;
   // }
 
-  remove(id: number) {
-    return `This action removes a #${id} role`;
+  /**
+   * Removes a role by its ID.
+   * @param id - The ID of the role to be removed.
+   * @returns A promise that resolves when the role is removed.
+   * @throws `NotFoundException` if the role with the specified ID is not found.
+   */
+  async remove(id: string): Promise<void> {
+    const role = await this.rolesRepository.findOne({ where: { id } });
+    if (!role) {
+      throw new NotFoundException(`Role with ID ${id} not found`);
+    }
+    await this.rolesRepository.remove(role);
   }
 }
