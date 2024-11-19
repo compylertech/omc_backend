@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from '../entities/role.entity';
 import { Repository } from 'typeorm';
@@ -41,6 +41,19 @@ export class RolesService {
       await this.rolePrivilegesRepository.save(rolePrivilege);
     }
 
+    return role;
+  }
+
+  /**
+   * Get a role by its name.
+   * @param name The name of the role.
+   * @returns The role entity.
+   */
+  async getRoleByName(name: string): Promise<Role> {
+    const role = await this.rolesRepository.findOne({ where: { name } });
+    if (!role) {
+      throw new NotFoundException(`Role with name ${name} not found`);
+    }
     return role;
   }
 
