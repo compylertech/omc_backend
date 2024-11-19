@@ -25,4 +25,9 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   password!: string;
+
+  @ApiProperty({ description: 'The role id of the user' })
+  @IsString()
+  @IsNotEmpty()
+  roleId!: string;
 }

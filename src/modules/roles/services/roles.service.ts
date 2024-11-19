@@ -2,19 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from '../entities/role.entity';
 import { Repository } from 'typeorm';
-import { Permission } from 'src/modules/permissions/entities/permission.entity';
-import { RolePermission } from 'src/modules/role_permission/entities/role_permission.entity';
 import { CreateRoleDto } from '../dto/create-role.dto';
+import { Privilege } from 'src/modules/privileges/entities/privileges.entity';
+import { RolePrivilege } from 'src/modules/role_privilege/entities/role_privilege.entity';
 
 @Injectable()
 export class RolesService {
   constructor(
     @InjectRepository(Role)
     private rolesRepository: Repository<Role>,
-    @InjectRepository(Permission)
-    private permissionsRepository: Repository<Permission>,
-    @InjectRepository(RolePermission)
-    private rolePermissionsRepository: Repository<RolePermission>,
+    @InjectRepository(Privilege)
+    private privilegesRepository: Repository<Privilege>,
+    @InjectRepository(RolePrivilege)
+    private rolePrivilegesRepository: Repository<RolePrivilege>,
   ) {}
 
   /**
@@ -23,22 +23,22 @@ export class RolesService {
    * @returns The created role entity.
    */
   async create(createRoleDto: CreateRoleDto): Promise<Role> {
-    const { name, description, privileges } = createRoleDto;
+    const { name, description, privileges: privilegeIds } = createRoleDto;
 
     // Create the role
     const role = this.rolesRepository.create({ name, description });
     await this.rolesRepository.save(role);
 
-    // Find the permissions by their IDs
-    const permissions = await this.permissionsRepository.findByIds(privileges);
+    // Find the privileges by their IDs
+    const privileges = await this.privilegesRepository.findByIds(privilegeIds);
 
-    // Create role-permission records
-    for (const permission of permissions) {
-      const rolePermission = this.rolePermissionsRepository.create({
+    // Create role-privilege records
+    for (const privilege of privileges) {
+      const rolePrivilege = this.rolePrivilegesRepository.create({
         role,
-        privilege: permission,
+        privilege: privilege,
       });
-      await this.rolePermissionsRepository.save(rolePermission);
+      await this.rolePrivilegesRepository.save(rolePrivilege);
     }
 
     return role;

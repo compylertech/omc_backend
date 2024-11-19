@@ -2,11 +2,18 @@ import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { UsersService } from '../services/users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Privilege } from 'src/modules/privileges/entities/privileges.entity';
+import { Repository } from 'typeorm';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    @InjectRepository(Privilege)
+    private privilegesRepository: Repository<Privilege>,
+  ) {}
 
   @Post()
   @ApiBody({ type: CreateUserDto })

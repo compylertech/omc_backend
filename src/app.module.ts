@@ -5,9 +5,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import databaseConfig from './config/database.config';
 import { UsersModule } from './modules/users/users.module';
-import { PermissionsModule } from './modules/permissions/permissions.module';
 import { RolesModule } from './modules/roles/roles.module';
-import { RolePermissionModule } from './modules/role_permission/role_permission.module';
+import { PrivilegesModule } from './modules/privileges/privileges.module';
+import { RolePrivilegeModule } from './modules/role_privilege/role_privilege.module';
+import { UserRoleModule } from './modules/user_role/user_role.module';
 
 @Module({
   imports: [
@@ -30,9 +31,10 @@ import { RolePermissionModule } from './modules/role_permission/role_permission.
       inject: [ConfigService],
     }),
     UsersModule,
-    PermissionsModule,
+    PrivilegesModule,
     RolesModule,
-    RolePermissionModule,
+    RolePrivilegeModule,
+    UserRoleModule,
   ],
   controllers: [AppController],
   providers: [AppService],

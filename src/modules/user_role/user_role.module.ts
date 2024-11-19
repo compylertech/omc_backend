@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { UserRoleService } from './user_role.service';
-import { UserRoleController } from './user_role.controller';
+import { UserRoleService } from './service/user_role.service';
 
 @Module({
-  controllers: [UserRoleController],
+  controllers: [],
   providers: [UserRoleService],
 })
 export class UserRoleModule {}
