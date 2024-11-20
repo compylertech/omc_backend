@@ -4,12 +4,18 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
+import { UserRole } from 'src/modules/user_role/entities/user_role.entity';
+import { Role } from 'src/modules/roles/entities/role.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(UserRole)
+    private userRoleRepository: Repository<UserRole>,
+    @InjectRepository(Role)
+    private rolesRepository: Repository<Role>,
   ) {}
 
   /**
@@ -18,8 +24,25 @@ export class UsersService {
    * @returns The created user entity.
    */
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const user = this.userRepository.create(createUserDto);
-    return this.userRepository.save(user);
+    const { firstName, lastName, phoneNumber, email, password, roleId } =
+      createUserDto;
+    const user = this.userRepository.create({
+      firstName,
+      lastName,
+      phoneNumber,
+      email,
+      password,
+    });
+    await this.userRepository.save(user);
+
+    const role = await this.rolesRepository.findOneBy({ id: roleId });
+    if (!role) {
+      throw new NotFoundException(`Role with ID ${roleId} not found`);
+    }
+
+    const userRole = this.userRoleRepository.create({ user, role });
+    await this.userRoleRepository.save(userRole);
+    return user;
   }
 
   /**
@@ -71,12 +94,12 @@ export class UsersService {
   /**
    * Find a user by email.
    * @param email The email address of the user.
-   * @returns The user entity.
+   * @returns The user entity or null if not found.
    */
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string): Promise<User | null> {
     const user = await this.userRepository.findOne({ where: { email } });
     if (!user) {
-      throw new NotFoundException(`User with email ${email} not found`);
+      return null;
     }
     return user;
   }

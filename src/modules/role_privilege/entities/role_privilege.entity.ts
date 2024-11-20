@@ -1,4 +1,4 @@
-import { Permission } from 'src/modules/permissions/entities/permission.entity';
+import { Privilege } from 'src/modules/privileges/entities/privileges.entity';
 import { Role } from 'src/modules/roles/entities/role.entity';
 import {
   Entity,
@@ -8,18 +8,18 @@ import {
   Column,
 } from 'typeorm';
 
-@Entity('role_permission')
-export class RolePermission {
+@Entity('role_privilege')
+export class RolePrivilege {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
   @ManyToOne(() => Role)
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'role_id' })
   role: Role;
 
-  @ManyToOne(() => Permission)
-  @JoinColumn({ name: 'permission_id' })
-  privilege: Permission;
+  @ManyToOne(() => Privilege)
+  @JoinColumn({ name: 'privilege_id' })
+  privilege: Privilege;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
@@ -33,7 +33,7 @@ export class RolePermission {
 
   constructor(
     role: Role,
-    privilege: Permission,
+    privilege: Privilege,
     created_at: Date = new Date(),
     updated_at: Date,
   ) {
