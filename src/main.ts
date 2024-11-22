@@ -1,7 +1,7 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { DataSource } from 'typeorm';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { JwtAuthGuard } from './auth/gusards/jwt-auth.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,20 +11,13 @@ async function bootstrap() {
     .setDescription('CRM API description')
     .setVersion('1.0')
     .addTag('CRM')
+    .addBearerAuth()
     .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
-  const dataSource = app.get(DataSource);
-  try {
-    if (dataSource.isInitialized) {
-      console.log('Database connection established successfully!');
-    }
-
-  } catch (error) {
-    console.error('Database connection failed:', error);
-    process.exit(1); // Exit the application if the connection fails
-  }
+  const reflector = app.get(Reflector);
+  app.useGlobalGuards(new JwtAuthGuard(reflector));
 
   await app.listen(3000);
 }

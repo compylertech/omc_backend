@@ -1,9 +1,10 @@
 import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { CreatePrivilegeDto } from '../dto/create-privilege.dto';
 import { PrivilegesService } from '../services/privileges.service';
 
 @ApiTags('Privileges')
+@ApiBearerAuth()
 @Controller('privileges')
 export class PrivilegesController {
   constructor(private readonly privilegesService: PrivilegesService) {}

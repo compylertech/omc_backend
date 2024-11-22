@@ -9,6 +9,11 @@ import { PrivilegesModule } from './modules/privileges/privileges.module';
 import { RolePrivilegeModule } from './modules/role_privilege/role_privilege.module';
 import { UserRoleModule } from './modules/user_role/user_role.module';
 import { AuthModule } from './auth/auth.module';
+import { ServicesModule } from './modules/services/services.module';
+import { FuelStationsModule } from './modules/fuel_stations/fuel_stations.module';
+import { FuelStationServiceModule } from './modules/fuel_station_service/fuel_station_service.module';
+import { FuelStationTransactionModule } from './modules/fuel_station_transaction/fuel_station_transaction.module';
+import { FilesModule } from './modules/files/files.module';
 
 @Module({
   imports: [
@@ -35,7 +40,12 @@ import { AuthModule } from './auth/auth.module';
     RolesModule,
     RolePrivilegeModule,
     UserRoleModule,
+    ServicesModule,
+    FuelStationsModule,
+    FuelStationServiceModule,
+    FuelStationTransactionModule,
     AuthModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

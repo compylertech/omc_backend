@@ -52,7 +52,9 @@ export class AuthService {
       ],
     });
     if (user && (await bcrypt.compare(password, user.password))) {
-      const payload = { user: user };
+      const userWithRolesAndPrivileges =
+        await this.usersService.getUserWithRolesAndPrivileges(user.id);
+      const payload = { user: userWithRolesAndPrivileges };
       const accessToken = this.jwtService.sign(payload);
       return { accessToken };
     } else {

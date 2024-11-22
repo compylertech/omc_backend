@@ -9,10 +9,11 @@ import { UserRole } from '../user_role/entities/user_role.entity';
 import { RolesModule } from '../roles/roles.module';
 import { Privilege } from '../privileges/entities/privileges.entity';
 import { PrivilegesModule } from '../privileges/privileges.module';
+import { File } from '../files/entities/file.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Role, UserRole, Privilege]),
+    TypeOrmModule.forFeature([User, Role, UserRole, Privilege, File]),
     RolesModule,
     PrivilegesModule,
   ],
