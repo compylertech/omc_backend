@@ -8,6 +8,8 @@ import * as bcrypt from 'bcrypt';
 import { SignUpDTO } from '../dto/signup.dto';
 import { UsersService } from 'src/modules/users/services/users.service';
 import { RolesService } from 'src/modules/roles/services/roles.service';
+import { UserRoleService } from 'src/modules/user_role/service/user_role.service';
+import { RolePrivilegeService } from 'src/modules/role_privilege/service/role_privilege.service';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +19,8 @@ export class AuthService {
     private jwtService: JwtService,
     private usersService: UsersService,
     private roleService: RolesService,
+    private userRoleService: UserRoleService,
+    private rolePrivilege: RolePrivilegeService,
   ) {}
 
   /**
@@ -52,9 +56,31 @@ export class AuthService {
       ],
     });
     if (user && (await bcrypt.compare(password, user.password))) {
-      const userWithRolesAndPrivileges =
-        await this.usersService.getUserWithRolesAndPrivileges(user.id);
-      const payload = { user: userWithRolesAndPrivileges };
+      const userRoles = await this.userRoleService.getUserRoles(user.id);
+
+      const rolesWithPrivileges = await Promise.all(
+        userRoles.map(async (role) => ({
+          id: role.id,
+          name: role.name,
+          roleType: role.roleType,
+          privileges: (
+            await this.rolePrivilege.getRolePrivileges(role.id)
+          ).privileges.map((privilege) => ({
+            id: privilege.id,
+            name: privilege.name,
+            description: privilege.description,
+          })),
+        })),
+      );
+
+      const payload = {
+        user: {
+          id: user.id,
+          email: user.email,
+          roles: rolesWithPrivileges,
+        },
+      };
+
       const accessToken = this.jwtService.sign(payload);
       return { accessToken };
     } else {

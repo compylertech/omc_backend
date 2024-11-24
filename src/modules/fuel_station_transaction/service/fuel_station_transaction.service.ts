@@ -18,6 +18,13 @@ export class FuelStationTransactionService {
     private userRepository: Repository<User>,
   ) {}
 
+  /**
+   * Creates a new fuel station transaction.
+   *
+   * @param createFuelStationTransactionDto - Data Transfer Object containing the details of the transaction to be created.
+   * @returns A promise that resolves to the created FuelStationTransaction.
+   * @throws NotFoundException - If the specified stationService or customer (if provided) does not exist.
+   */
   async create(
     createFuelStationTransactionDto: CreateFuelStationTransactionDto,
   ): Promise<FuelStationTransaction> {
@@ -57,6 +64,11 @@ export class FuelStationTransactionService {
     return this.fuelStationTransactionRepository.save(fuelStationTransaction);
   }
 
+  /**
+   * Retrieves all fuel station transactions from the repository.
+   *
+   * @returns {Promise<FuelStationTransaction[]>} A promise that resolves to an array of FuelStationTransaction objects.
+   */
   async findAll(): Promise<FuelStationTransaction[]> {
     return this.fuelStationTransactionRepository.find();
   }
