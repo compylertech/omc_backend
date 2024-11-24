@@ -103,4 +103,18 @@ export class UsersService {
     }
     return user;
   }
+
+  /**
+   * Get a user with their roles and privileges.
+   * @param userId The ID of the user.
+   * @returns The user entity with roles and privileges.
+   */
+  async getUserWithRolesAndPrivileges(userId: string): Promise<User | null> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.roles', 'role')
+      .leftJoinAndSelect('role.privileges', 'privilege')
+      .where('user.id = :userId', { userId })
+      .getOne();
+  }
 }

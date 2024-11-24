@@ -23,9 +23,14 @@ export class RolesService {
    * @returns The created role entity.
    */
   async create(createRoleDto: CreateRoleDto): Promise<Role> {
-    const { name, description, privileges: privilegeIds } = createRoleDto;
+    const {
+      name,
+      description,
+      roleType,
+      privileges: privilegeIds,
+    } = createRoleDto;
 
-    const role = this.rolesRepository.create({ name, description });
+    const role = this.rolesRepository.create({ name, description, roleType });
     await this.rolesRepository.save(role);
 
     const privileges = await this.privilegesRepository.findByIds(privilegeIds);
@@ -121,5 +126,18 @@ export class RolesService {
       throw new NotFoundException(`Role with ID ${id} not found`);
     }
     await this.rolesRepository.remove(role);
+  }
+
+  /**
+   * Get all privileges associated with a role.
+   * @param roleId The ID of the role.
+   * @returns A promise that resolves to an array of Privilege objects.
+   */
+  async getUserRoles(userId: string): Promise<Role[]> {
+    return this.rolesRepository
+      .createQueryBuilder('role')
+      .innerJoin('role.users', 'user', 'user.id = :userId', { userId })
+      .leftJoinAndSelect('role.privileges', 'privilege')
+      .getMany();
   }
 }
