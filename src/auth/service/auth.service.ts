@@ -8,9 +8,12 @@ import * as bcrypt from 'bcrypt';
 import { SignUpDTO } from '../dto/signup.dto';
 import { UsersService } from 'src/modules/users/services/users.service';
 import { RolesService } from 'src/modules/roles/services/roles.service';
+import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class AuthService {
+  private otpStore: Map<string, { otp: number, expiresAt: Date }> = new Map();
+
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
@@ -60,5 +63,58 @@ export class AuthService {
     } else {
       throw new UnauthorizedException('Invalid credentials');
     }
+  }
+
+  async sendOtpEmail(email: string, otp: string): Promise<void> {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Your OTP Code',
+      text: `Your OTP code is ${otp}. It will expire in 10 minutes.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+  }
+
+  async generateResetPasswordOTP(email: string): Promise<{ message: string }> {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) return { message: 'User not found' };
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    this.otpStore.set(email, { otp: parseInt(otp), expiresAt });
+
+    await this.sendOtpEmail(user.email, otp);
+    return { message: 'OTP generated and sent to email' };
+  }
+
+  async forgotPassword(email: string) {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) return { message: 'User not found' };
+    await this.generateResetPasswordOTP(email);
+  }
+  
+  async verifyResetPasswordOTP(email: string, otp: number): Promise<boolean> {
+    const otpData = this.otpStore.get(email);
+    if (!otpData) return false;
+
+    const isOtpValid = otpData.otp === otp && otpData.expiresAt > new Date();
+    return isOtpValid;
+  }
+
+  async resetPassword(userId: string, newPassword: string, confirmPassword: string) {
+    if (newPassword !== confirmPassword) return { message: 'Passwords do not match' };
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await this.usersService.update(userId, { password: hashedPassword });
   }
 }
