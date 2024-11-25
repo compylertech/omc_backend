@@ -38,7 +38,7 @@ export class AuthService {
     return this.usersService.create({
       ...signUpDto,
       password: hashedPassword,
-      roleId: customerRole.id,
+      roleIds: [customerRole.id],
     });
   }
 

@@ -29,5 +29,5 @@ export class CreateUserDto {
   @ApiProperty({ description: 'The role id of the user' })
   @IsString()
   @IsNotEmpty()
-  roleId!: string;
+  roleIds!: string[];
 }

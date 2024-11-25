@@ -12,3 +12,8 @@ export enum ServiceType {
   PARKING = 'PARKING',
   SHOP = 'SHOP',
 }
+
+export enum Order {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
