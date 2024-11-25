@@ -6,16 +6,26 @@ import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { UserRole } from 'src/modules/user_role/entities/user_role.entity';
 import { Role } from 'src/modules/roles/entities/role.entity';
+import { RolePrivilege } from 'src/modules/role_privilege/entities/role_privilege.entity';
+import { Privilege } from 'src/modules/privileges/entities/privileges.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private userRepository: Repository<User>,
+
+    @InjectRepository(Role)
+    private roleRepository: Repository<Role>,
+
+    @InjectRepository(Privilege)
+    private privilegeRepository: Repository<Privilege>,
+
     @InjectRepository(UserRole)
     private userRoleRepository: Repository<UserRole>,
-    @InjectRepository(Role)
-    private rolesRepository: Repository<Role>,
+
+    @InjectRepository(RolePrivilege)
+    private rolePrivilegeRepository: Repository<RolePrivilege>,
   ) {}
 
   /**
@@ -35,7 +45,7 @@ export class UsersService {
     });
     await this.userRepository.save(user);
 
-    const role = await this.rolesRepository.findOneBy({ id: roleId });
+    const role = await this.roleRepository.findOneBy({ id: roleId });
     if (!role) {
       throw new NotFoundException(`Role with ID ${roleId} not found`);
     }
@@ -102,19 +112,5 @@ export class UsersService {
       return null;
     }
     return user;
-  }
-
-  /**
-   * Get a user with their roles and privileges.
-   * @param userId The ID of the user.
-   * @returns The user entity with roles and privileges.
-   */
-  async getUserWithRolesAndPrivileges(userId: string): Promise<User | null> {
-    return this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.roles', 'role')
-      .leftJoinAndSelect('role.privileges', 'privilege')
-      .where('user.id = :userId', { userId })
-      .getOne();
   }
 }

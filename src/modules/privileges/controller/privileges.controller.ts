@@ -4,7 +4,7 @@ import { CreatePrivilegeDto } from '../dto/create-privilege.dto';
 import { PrivilegesService } from '../services/privileges.service';
 
 @ApiTags('Privileges')
-@ApiBearerAuth()
+// @ApiBearerAuth()
 @Controller('privileges')
 export class PrivilegesController {
   constructor(private readonly privilegesService: PrivilegesService) {}
