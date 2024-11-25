@@ -24,14 +24,14 @@ export class AuthController {
   @ApiBody({ schema: { type: 'object', properties: { email: { type: 'string' } } } })
   @ApiResponse({ status: 200, description: 'OTP generated and sent to email.' })
   @ApiResponse({ status: 404, description: 'User not found.' })
-  async forgotPassword(@Body() email: string) {
-    return this.authService.forgotPassword(email);
+  async forgotPassword(@Body() payload: { email: string }) {
+    return this.authService.forgotPassword(payload.email);
   }
 
   @Post('verify-otp')
   @ApiOperation({ summary: 'Verify OTP for password reset' })
   @ApiBody({ schema: { type: 'object', properties: { email: { type: 'string' }, otp: { type: 'string' } } } })
-  @ApiResponse({ status: 200, description: 'OTP verified.' })
+  @ApiResponse({ status: 201, description: 'OTP verified.' })
   @ApiResponse({ status: 400, description: 'Invalid OTP or expired.' })
   async verifyOtp(@Body() payload: { email: string, otp: number }) {
     return this.authService.verifyResetPasswordOTP(payload.email, payload.otp);

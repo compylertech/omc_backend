@@ -107,7 +107,9 @@ export class UsersService {
    * @returns The user entity or null if not found.
    */
   async findByEmail(email: string): Promise<User | null> {
-    const user = await this.userRepository.findOne({ where: { email } });
+    console.log('Email', email);
+    const user = await this.userRepository.findOneBy({email});
+    console.log('User in users service', user);
     if (!user) {
       return null;
     }
