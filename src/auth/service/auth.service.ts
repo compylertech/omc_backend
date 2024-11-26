@@ -36,7 +36,7 @@ export class AuthService {
     if (sameUser) return { message: 'User already exists' };
 
     const hashedPassword = await bcrypt.hash(signUpDto.password, 10);
-    const customerRole = await this.roleService.getRoleByName('CUSTOMER');
+    const customerRole = await this.roleService.getRoleByName('Customer');
 
     return this.usersService.create({
       ...signUpDto,
@@ -113,20 +113,19 @@ export class AuthService {
   }
 
   async generateResetPasswordOTP(email: string): Promise<{ message: string }> {
-    const user = await this.usersService.findByEmail(email);
-    if (!user) return { message: 'User not found' };
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
     this.otpStore.set(email, { otp: parseInt(otp), expiresAt });
 
-    await this.sendOtpEmail(user.email, otp);
+    await this.sendOtpEmail(email, otp);
     return { message: 'OTP generated and sent to email' };
   }
 
   async forgotPassword(email: string) {
     const user = await this.usersService.findByEmail(email);
+    console.log('User in forgot password', user);
     if (!user) return { message: 'User not found' };
     await this.generateResetPasswordOTP(email);
   }

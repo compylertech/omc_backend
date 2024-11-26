@@ -5,6 +5,7 @@ import { PrivilegesService } from '../services/privileges.service';
 import { Public } from 'src/auth/public.decorator';
 
 @ApiTags('Privileges')
+// @ApiBearerAuth()
 @Public()
 @Controller('privileges')
 export class PrivilegesController {

@@ -23,16 +23,16 @@ export class AuthController {
   @Post('forgot-password')
   @ApiOperation({ summary: 'Generate OTP for password reset' })
   @ApiBody({ schema: { type: 'object', properties: { email: { type: 'string' } } } })
-  @ApiResponse({ status: 200, description: 'OTP generated and sent to email.' })
+  @ApiResponse({ status: 201, description: 'OTP generated and sent to email.' })
   @ApiResponse({ status: 404, description: 'User not found.' })
-  async forgotPassword(@Body() email: string) {
-    return this.authService.forgotPassword(email);
+  async forgotPassword(@Body() payload: { email: string }) {
+    return this.authService.forgotPassword(payload.email);
   }
 
   @Post('verify-otp')
   @ApiOperation({ summary: 'Verify OTP for password reset' })
   @ApiBody({ schema: { type: 'object', properties: { email: { type: 'string' }, otp: { type: 'string' } } } })
-  @ApiResponse({ status: 200, description: 'OTP verified.' })
+  @ApiResponse({ status: 201, description: 'OTP verified.' })
   @ApiResponse({ status: 400, description: 'Invalid OTP or expired.' })
   async verifyOtp(@Body() payload: { email: string, otp: number }) {
     return this.authService.verifyResetPasswordOTP(payload.email, payload.otp);
@@ -41,7 +41,7 @@ export class AuthController {
   @Post('reset-password')
   @ApiOperation({ summary: 'Reset user password' })
   @ApiBody({ schema: { type: 'object', properties: { userId: { type: 'string' }, newPassword: { type: 'string' }, confirmPassword: { type: 'string' } } } })
-  @ApiResponse({ status: 200, description: 'Password reset successfully.' })
+  @ApiResponse({ status: 201, description: 'Password reset successfully.' })
   @ApiResponse({ status: 400, description: 'Passwords do not match.' })
   async resetPassword(@Body() payload: { userId: string, newPassword: string, confirmPassword: string }) {
     return this.authService.resetPassword(payload.userId, payload.newPassword, payload.confirmPassword);
