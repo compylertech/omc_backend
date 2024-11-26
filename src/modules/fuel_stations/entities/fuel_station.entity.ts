@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from 'src/modules/users/entities/user.entity';
+import { FuelStationStatus } from 'src/utils/enums';
 
 @Entity('fuel_stations')
 export class FuelStation {
@@ -40,6 +41,13 @@ export class FuelStation {
   @Column({ type: 'varchar', nullable: false })
   phoneNumber: string;
 
+  @Column({
+    type: 'enum',
+    enum: FuelStationStatus,
+    default: FuelStationStatus.PENDING,
+  })
+  status: FuelStationStatus;
+
   @ManyToOne(() => User, { nullable: false })
   manager: User;
 
@@ -59,7 +67,10 @@ export class FuelStation {
     pobox: string,
     email: string,
     phoneNumber: string,
+    status: FuelStationStatus,
+    rejectedReason: string,
     manager: User,
+    approvedBy: User,
     createdAt: Date = new Date(),
     updatedAt: Date = new Date(),
   ) {
@@ -72,6 +83,7 @@ export class FuelStation {
     this.pobox = pobox;
     this.email = email;
     this.phoneNumber = phoneNumber;
+    this.status = status;
     this.manager = manager;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;

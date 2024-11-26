@@ -17,3 +17,9 @@ export enum Order {
   ASC = 'ASC',
   DESC = 'DESC',
 }
+
+export enum FuelStationStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}

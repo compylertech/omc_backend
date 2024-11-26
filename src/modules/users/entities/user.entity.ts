@@ -31,7 +31,7 @@ export class User {
   isActive: boolean;
 
   @OneToOne(() => File, { nullable: true })
-  @JoinColumn({ name: 'fileID' })
+  @JoinColumn({ name: 'profilePicture' })
   profilePicture: File | null;
 
   @Column({ default: new Date() })
