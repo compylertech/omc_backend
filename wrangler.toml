@@ -1,0 +1,4 @@
+name = "nestjs-cloudflare"
+main = "dist/main.js"
+compatibility_date = "2023-11-20"
+node_compat = true

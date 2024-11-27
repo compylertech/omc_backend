@@ -1,17 +1,27 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    // "module": "commonjs",
+    "module": "ESNext",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ES2021",
+    // "target": "ES2021",
+    "target": "ES6",
     "sourceMap": true,
-    "outDir": "./dist",
+    // "outDir": "./dist",
+
+    "outDir": "dist",
     "baseUrl": "./",
     "incremental": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+
+    "strict": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node", // Ensures TypeScript resolves node_modules correctly
+    "typeRoots": ["./node_modules/@types"] // Ensures TypeScript finds type declarations
   }
 }
