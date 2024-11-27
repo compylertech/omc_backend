@@ -5,6 +5,7 @@ import { JwtAuthGuard } from './auth/gusards/jwt-auth.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
 
   const config = new DocumentBuilder()
     .setTitle('CRM')

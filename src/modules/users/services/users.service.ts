@@ -145,8 +145,27 @@ export class UsersService {
    */
   async findByEmail(email: string): Promise<User | null> {
     console.log('Email', email);
-    const user = await this.userRepository.findOneBy({email});
+    const user = await this.userRepository.findOneBy({ email });
     console.log('User in users service', user);
+    if (!user) {
+      return null;
+    }
+    return user;
+  }
+
+  /**
+   * Find a user by email or phoneNumber.
+   * @param email The email address of the user.
+   * @param phoneNumber The phone number of the user.
+   * @returns The user entity or null if not found.
+   */
+  async findByEmailOrPhoneNumber(
+    email: string,
+    phoneNumber: string,
+  ): Promise<User | null> {
+    const user = await this.userRepository.findOne({
+      where: [{ email }, { phoneNumber }],
+    });
     if (!user) {
       return null;
     }

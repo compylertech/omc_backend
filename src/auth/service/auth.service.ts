@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/modules/users/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -14,7 +18,7 @@ import { RolePrivilegeService } from 'src/modules/role_privilege/service/role_pr
 
 @Injectable()
 export class AuthService {
-  private otpStore: Map<string, { otp: number, expiresAt: Date }> = new Map();
+  private otpStore: Map<string, { otp: number; expiresAt: Date }> = new Map();
 
   constructor(
     @InjectRepository(User)
@@ -32,8 +36,13 @@ export class AuthService {
    * @returns The created user or an error message.
    */
   async signUp(signUpDto: SignUpDTO) {
-    const sameUser = await this.usersService.findByEmail(signUpDto.email);
-    if (sameUser) return { message: 'User already exists' };
+    const sameUser = await this.usersService.findByEmailOrPhoneNumber(
+      signUpDto.email,
+      signUpDto.phoneNumber,
+    );
+    if (sameUser) {
+      throw new BadRequestException('User already exists');
+    }
 
     const hashedPassword = await bcrypt.hash(signUpDto.password, 10);
     const customerRole = await this.roleService.getRoleByName('Customer');
@@ -113,7 +122,6 @@ export class AuthService {
   }
 
   async generateResetPasswordOTP(email: string): Promise<{ message: string }> {
-
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
@@ -129,7 +137,7 @@ export class AuthService {
     if (!user) return { message: 'User not found' };
     await this.generateResetPasswordOTP(email);
   }
-  
+
   async verifyResetPasswordOTP(email: string, otp: number): Promise<boolean> {
     const otpData = this.otpStore.get(email);
     if (!otpData) return false;
@@ -138,8 +146,13 @@ export class AuthService {
     return isOtpValid;
   }
 
-  async resetPassword(userId: string, newPassword: string, confirmPassword: string) {
-    if (newPassword !== confirmPassword) return { message: 'Passwords do not match' };
+  async resetPassword(
+    userId: string,
+    newPassword: string,
+    confirmPassword: string,
+  ) {
+    if (newPassword !== confirmPassword)
+      return { message: 'Passwords do not match' };
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await this.usersService.update(userId, { password: hashedPassword });

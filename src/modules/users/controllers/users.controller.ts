@@ -15,9 +15,10 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { PageOptionsDto } from 'src/common/dto/page-optional.dto';
 import { PageDto } from 'src/common/dto/page.dto';
 import { User } from '../entities/user.entity';
+import { Public } from 'src/auth/public.decorator';
 
 @ApiTags('Users')
-@ApiBearerAuth()
+@Public()
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
