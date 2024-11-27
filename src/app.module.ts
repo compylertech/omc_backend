@@ -32,6 +32,9 @@ import { FilesModule } from './modules/files/files.module';
         database: configService.get<string>('DB_DATABASE'),
         autoLoadEntities: true,
         synchronize: true,
+        ssl: {
+          rejectUnauthorized: false, // Bypass strict SSL validation
+        },
       }),
       inject: [ConfigService],
     }),
