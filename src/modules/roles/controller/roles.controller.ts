@@ -1,7 +1,11 @@
 import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { RolesService } from '../services/roles.service';
 import { CreateRoleDto } from '../dto/create-role.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/auth/public.decorator';
 
+@ApiTags('Roles')
+@Public()
 @Controller('roles')
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
@@ -20,11 +24,6 @@ export class RolesController {
   findOne(@Param('id') id: string) {
     return this.rolesService.findOne(id);
   }
-
-  // @Put(':id')
-  // update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-  //   return this.rolesService.update(id, updateRoleDto);
-  // }
 
   @Delete(':id')
   remove(@Param('id') id: string) {

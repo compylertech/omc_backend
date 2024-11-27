@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { FuelStationServiceService } from './fuel_station_service.service';
-import { FuelStationServiceController } from './fuel_station_service.controller';
+import { FuelStationServiceService } from './service/fuel_station_service.service';
 
 @Module({
-  controllers: [FuelStationServiceController],
+  controllers: [],
   providers: [FuelStationServiceService],
 })
 export class FuelStationServiceModule {}

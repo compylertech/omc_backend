@@ -10,7 +10,10 @@ import {
 import { FilesService } from '../service/files.service';
 import { CreateFileDto } from '../dto/create-file.dto';
 import { UpdateFileDto } from '../dto/update-file.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Files')
+@ApiBearerAuth()
 @Controller('files')
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
