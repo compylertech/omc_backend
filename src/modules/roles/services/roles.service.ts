@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { Privilege } from 'src/modules/privileges/entities/privileges.entity';
 import { RolePrivilege } from 'src/modules/role_privilege/entities/role_privilege.entity';
+import { RoleType } from 'src/utils/enums';
 
 @Injectable()
 export class RolesService {
@@ -54,7 +55,15 @@ export class RolesService {
   async getRoleByName(name: string): Promise<Role> {
     const role = await this.rolesRepository.findOne({ where: { name } });
     if (!role) {
-      throw new NotFoundException(`Role with name ${name} not found`);
+      const t : CreateRoleDto = {
+        name: name,
+        description: `Description for ${name}`,
+        roleType: RoleType.ADMIN,
+        privileges: []
+      }
+      
+      return this.create(t);
+      // throw new NotFoundException(`Role with name ${name} not found`);
     }
     return role;
   }

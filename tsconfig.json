@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
-    // "module": "commonjs",
-    "module": "ESNext",
+    "module": "commonjs",
+    // "module": "ESNext",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    // "target": "ES2021",
-    "target": "ES6",
+    "target": "ES2021",
+    // "target": "ES6",
     "sourceMap": true,
     // "outDir": "./dist",
 
