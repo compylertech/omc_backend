@@ -8,7 +8,13 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiBody, ApiTags, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiTags,
+  ApiBearerAuth,
+  ApiQuery,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { UsersService } from '../services/users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
@@ -25,8 +31,63 @@ export class UsersController {
 
   @Post()
   @ApiBody({ type: CreateUserDto })
+  @ApiResponse({
+    status: 201,
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        firstName: { type: 'string' },
+        lastName: { type: 'string' },
+        phoneNumber: { type: 'string' },
+        email: { type: 'string' },
+        password: { type: 'string' },
+        createdAt: { type: 'string' },
+        updatedAt: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'User with email already exists.',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        error: { type: 'string' },
+        code: { type: 'number' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            firstName: { type: 'string' },
+            lastName: { type: 'string' },
+            phoneNumber: { type: 'string' },
+            email: { type: 'string' },
+            password: { type: 'string' },
+            createdAt: { type: 'string' },
+            updatedAt: { type: 'string' },
+          },
+        },
+        message: { type: 'string' },
+        code: { type: 'number' },
+      },
+    },
+  })
   create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+    return this.usersService.create(createUserDto).then((user) => ({
+      data: user,
+      message: 'User created successfully',
+      code: 201,
+    }));
   }
 
   // @Get()
@@ -36,20 +97,103 @@ export class UsersController {
   @Get()
   @ApiQuery({ name: 'searchKey', required: false, type: String })
   @ApiQuery({ name: 'userType', required: false, type: Boolean })
+  @ApiResponse({
+    status: 200,
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              firstName: { type: 'string' },
+              lastName: { type: 'string' },
+              phoneNumber: { type: 'string' },
+              email: { type: 'string' },
+              password: { type: 'string' },
+              createdAt: { type: 'string' },
+              updatedAt: { type: 'string' },
+            },
+          },
+        },
+        meta: {
+          type: 'object',
+          properties: {
+            page: { type: 'number' },
+            perPage: { type: 'number' },
+            totalItems: { type: 'number' },
+            totalPages: { type: 'number' },
+          },
+        },
+        message: { type: 'string' },
+        code: { type: 'number' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request.',
+    schema: { type: 'object' },
+  })
   findAll(
     @Query() pageOptionsDto: PageOptionsDto,
-    searchKey?: string,
-    userType?: boolean,
-  ): Promise<PageDto<User>> {
-    return this.usersService.findAll(pageOptionsDto, searchKey, userType);
+    @Query('searchKey') searchKey?: string,
+    @Query('userType') userType?: boolean,
+  ): Promise<{ data: PageDto<User>; message: string; code: number }> {
+    return this.usersService
+      .findAll(pageOptionsDto, searchKey, userType)
+      .then((result) => ({
+        data: result,
+        message: 'Users retrieved successfully',
+        code: 200,
+      }));
   }
 
   @Get(':id')
+  @ApiResponse({
+    status: 200,
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        firstName: { type: 'string' },
+        lastName: { type: 'string' },
+        phoneNumber: { type: 'string' },
+        email: { type: 'string' },
+        password: { type: 'string' },
+        createdAt: { type: 'string' },
+        updatedAt: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request.',
+    schema: { type: 'object' },
+  })
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
 
   @Put(':id')
+  @ApiResponse({
+    status: 200,
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        firstName: { type: 'string' },
+        lastName: { type: 'string' },
+        phoneNumber: { type: 'string' },
+        email: { type: 'string' },
+        password: { type: 'string' },
+        createdAt: { type: 'string' },
+        updatedAt: { type: 'string' },
+      },
+    },
+  })
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
@@ -58,9 +202,4 @@ export class UsersController {
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
   }
-
-  // @Get('email/:email')
-  // findByEmail(@Param('email') email: string) {
-  //   return this.usersService.findByEmail(email);
-  // }
 }
