@@ -105,6 +105,17 @@ export class UsersService {
     return new PageDto(entities, pageMetaDto);
   }
 
+  async findAllList(userType?: boolean): Promise<User[]> {
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
+
+    if (userType !== undefined) {
+      queryBuilder.andWhere('user.isActive = :userType', { userType });
+    }
+
+    const { entities } = await queryBuilder.getRawAndEntities();
+    return entities;
+  }
+
   /**
    * Get a single user by ID.
    * @param userId The ID of the user.

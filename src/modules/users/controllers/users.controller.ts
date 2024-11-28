@@ -151,6 +151,49 @@ export class UsersController {
       }));
   }
 
+  @Get('/list')
+  @ApiQuery({ name: 'userType', required: false, type: Boolean })
+  @ApiResponse({
+    status: 200,
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              firstName: { type: 'string' },
+              lastName: { type: 'string' },
+              phoneNumber: { type: 'string' },
+              email: { type: 'string' },
+              password: { type: 'string' },
+              createdAt: { type: 'string' },
+              updatedAt: { type: 'string' },
+            },
+          },
+        },
+        message: { type: 'string' },
+        code: { type: 'number' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request.',
+    schema: { type: 'object' },
+  })
+  findAllList(
+    @Query('userType') userType?: boolean,
+  ): Promise<{ data: User[]; message: string; code: number }> {
+    return this.usersService.findAllList(userType).then((result) => ({
+      data: result,
+      message: 'Users retrieved successfully',
+      code: 200,
+    }));
+  }
+
   @Get(':id')
   @ApiResponse({
     status: 200,
