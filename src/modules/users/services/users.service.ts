@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -40,6 +44,10 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     const { firstName, lastName, phoneNumber, email, password, roleIds } =
       createUserDto;
+    const sameUser = await this.findByEmailOrPhoneNumber(email, phoneNumber);
+    if (sameUser) {
+      throw new BadRequestException('User already exists');
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = this.userRepository.create({
       firstName,
@@ -95,6 +103,17 @@ export class UsersService {
     const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
 
     return new PageDto(entities, pageMetaDto);
+  }
+
+  async findAllList(userType?: boolean): Promise<User[]> {
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
+
+    if (userType !== undefined) {
+      queryBuilder.andWhere('user.isActive = :userType', { userType });
+    }
+
+    const { entities } = await queryBuilder.getRawAndEntities();
+    return entities;
   }
 
   /**
